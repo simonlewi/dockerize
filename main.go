@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -13,11 +15,19 @@ func main() {
 
 	m.HandleFunc("/", handlePage)
 
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: Error loading .env file")
+	}
+
 	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("PORT environment variable not set or empty")
+	}
+	fmt.Println("PORT environment variable:", port)
 
 	srv := http.Server{
 		Handler:      m,
-		Addr:         port,
+		Addr:         ":" + port,
 		WriteTimeout: 30 * time.Second,
 		ReadTimeout:  30 * time.Second,
 	}
